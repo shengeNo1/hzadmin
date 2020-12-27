@@ -1,6 +1,8 @@
 package me.shengeNo1.modules.security.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import me.shengeNo1.modules.security.service.dto.JwtUserDto;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,10 +16,13 @@ import org.springframework.stereotype.Service;
  * @createTime 2020年12月25日 20:21:00
  */
 @RequiredArgsConstructor
+@Slf4j
 @Service("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        log.info(s);
+
         return null;
     }
 }

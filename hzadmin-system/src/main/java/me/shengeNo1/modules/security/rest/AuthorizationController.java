@@ -15,6 +15,10 @@ import me.shengeNo1.utils.GenericResponse;
 import me.shengeNo1.utils.RedisUtils;
 import me.shengeNo1.utils.RsaUtils;
 import me.shengeNo1.utils.StringUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +46,7 @@ public class AuthorizationController {
     private final RedisUtils redisUtils;
     @Resource
     private LoginProperties loginProperties;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @ApiOperation("获取验证码")
     @GetMapping("/code")
@@ -49,13 +54,16 @@ public class AuthorizationController {
         Captcha captcha = loginProperties.getCaptcha();
         String uuid = properties.getCodeKey() + IdUtil.simpleUUID();
         //当验证码类型为 arithmetic时且长度 >= 2 时，captcha.text()的结果有几率为浮点型
+
         String captchaValue = captcha.text();
+
         if (captcha.getCharType() - 1 == LoginCodeEnum.arithmetic.ordinal() && captchaValue.contains(".")) {
             captchaValue = captchaValue.split("\\.")[0];
         }
         // 保存
         redisUtils.set(uuid, captchaValue, loginProperties.getLoginCode().getExpiration(), TimeUnit.MINUTES);
-        Map<String, Object> imgResult = new HashMap<String, Object>(2) {{
+        Map<String, Object> imgResult = new HashMap<
+                String, Object>(2) {{
             put("img", captcha.toBase64());
             put("uuid", uuid);
         }};
@@ -77,6 +85,11 @@ public class AuthorizationController {
         if (StringUtils.isBlank(authUserDto.getCode()) || !authUserDto.getCode().equalsIgnoreCase(code)){
             return GenericResponse.vf("验证码错误");
         }
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(authUserDto.getUsername(),password);
+        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        System.out.println(authenticate);
         return null;
     }
 }

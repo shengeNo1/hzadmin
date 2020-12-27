@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableAsync
 public class AppRun {
+
     public static void main(String[] args) {
         SpringApplication.run(AppRun.class,args);
     }
