@@ -3,9 +3,16 @@
         PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
+<!--    <classPathEntry-->
+<!--            location="D:\maven\repository\mysql\mysql-connector-java\8.0.22\mysql-connector-java-8.0.22.jar"/>-->
+
     <classPathEntry
-            location="D:\maven\repository\mysql\mysql-connector-java\8.0.22\mysql-connector-java-8.0.22.jar"/>
+            location="C:\Users\Administrator\.m2\repository\mysql\mysql-connector-java\8.0.21\mysql-connector-java-8.0.21.jar"/>
     <context id="DB2Tables" targetRuntime="MyBatis3">
+        
+        <plugin type="org.mybatis.generator.plugins.LombokPlugin">
+            <property name="hasLombok" value="true"/>
+        </plugin>
 
         <commentGenerator>
             <property name="suppressDate" value="true"/>
@@ -13,11 +20,11 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/hzadmin?serverTimezone=UTC"
+                        connectionURL="jdbc:mysql://localhost:3306/greencity?serverTimezone=UTC"
                         userId="root"
                         password="123456"/>
 
-        <javaModelGenerator targetPackage="me.shengeNo1.modules.system.service.model"
+        <javaModelGenerator targetPackage="me.shengeNo1.modules.system.model"
                             targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
@@ -27,7 +34,7 @@
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
-        <javaClientGenerator type="XMLMAPPER" targetPackage="me.shengeNo1.modules.system.service.dao"
+        <javaClientGenerator type="XMLMAPPER" targetPackage="me.shengeNo1.modules.system.dao"
                              targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>

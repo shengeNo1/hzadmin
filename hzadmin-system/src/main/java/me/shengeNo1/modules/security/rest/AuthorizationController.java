@@ -7,14 +7,18 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.shengeNo1.config.RsaProperties;
+import me.shengeNo1.exception.BadRequestException;
 import me.shengeNo1.modules.security.config.bean.LoginCodeEnum;
 import me.shengeNo1.modules.security.config.bean.LoginProperties;
 import me.shengeNo1.modules.security.config.bean.SecurityProperties;
+import me.shengeNo1.modules.security.security.TokenProvider;
 import me.shengeNo1.modules.security.service.dto.AuthUserDto;
+import me.shengeNo1.modules.security.service.dto.JwtUserDto;
 import me.shengeNo1.utils.GenericResponse;
 import me.shengeNo1.utils.RedisUtils;
 import me.shengeNo1.utils.RsaUtils;
 import me.shengeNo1.utils.StringUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -46,11 +50,12 @@ public class AuthorizationController {
     private final RedisUtils redisUtils;
     @Resource
     private LoginProperties loginProperties;
+    private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @ApiOperation("获取验证码")
     @GetMapping("/code")
-    public GenericResponse getCode() throws Exception {
+    public ResponseEntity<Object> getCode() throws Exception {
         Captcha captcha = loginProperties.getCaptcha();
         String uuid = properties.getCodeKey() + IdUtil.simpleUUID();
         //当验证码类型为 arithmetic时且长度 >= 2 时，captcha.text()的结果有几率为浮点型
@@ -67,12 +72,12 @@ public class AuthorizationController {
             put("img", captcha.toBase64());
             put("uuid", uuid);
         }};
-        return GenericResponse.ok(imgResult);
+        return ResponseEntity.ok(imgResult);
     }
 
     @PostMapping(value = "/login")
     @ApiOperation("登录授权")
-    public GenericResponse login(@Validated @RequestBody AuthUserDto authUserDto) throws Exception {
+    public ResponseEntity<Object> login(@Validated @RequestBody AuthUserDto authUserDto) throws Exception {
         // 解密密码
         String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, authUserDto.getPassword());
         // 查询验证码
@@ -80,16 +85,18 @@ public class AuthorizationController {
         // 清除验证码
         redisUtils.del(authUserDto.getUuid());
         if (StringUtils.isBlank(code)){
-            return GenericResponse.vf("验证码不存在或已过期");
+            throw new BadRequestException("验证码不存在或已过期");
         }
         if (StringUtils.isBlank(authUserDto.getCode()) || !authUserDto.getCode().equalsIgnoreCase(code)){
-            return GenericResponse.vf("验证码错误");
+            throw new BadRequestException("验证码错误");
         }
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(authUserDto.getUsername(),password);
         Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        System.out.println(authenticate);
+        String providerToken = tokenProvider.createToken(authenticationToken);
+        JwtUserDto jwtUserDto = (JwtUserDto) authenticate.getPrincipal();
+
         return null;
     }
 }
