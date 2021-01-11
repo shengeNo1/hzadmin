@@ -8,18 +8,20 @@ import javax.crypto.spec.IvParameterSpec;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author 深哥哥的小迷妹 liuyuanshenno.1@gmail.com
- * @version 1.0.0
+ * @author shengeNo1 liuyuanshenno.1@gmail.com
  * @ClassName EncryptUtils.java
- * @Description TODO
- * @createTime 2020年12月25日 20:11:00
+ * @Description 加密
+ * @createTime 2021年01月02日 15:11:00
  */
+
 public class EncryptUtils {
-    private static final String STR_PARAM = "Passw0rd";
+
+    private static final String STR_PARAM = "PASSWORD";
 
     private static Cipher cipher;
 
     private static final IvParameterSpec IV = new IvParameterSpec(STR_PARAM.getBytes(StandardCharsets.UTF_8));
+
 
     private static DESKeySpec getDesKeySpec(String source) throws Exception {
         if (source == null || source.length() == 0){

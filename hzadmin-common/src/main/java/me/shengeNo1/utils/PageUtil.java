@@ -8,16 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author 深哥哥的小迷妹 liuyuanshenno.1@gmail.com
- * @version 1.0.0
+ * @author shengeNo1 liuyuanshenno.1@gmail.com
  * @ClassName PageUtil.java
  * @Description TODO
- * @createTime 2020年12月25日 20:14:00
+ * @createTime 2021年01月02日 15:40:00
  */
-public class PageUtil {
-    /**
-     * List 分页
-     */
+
+public class PageUtil  extends cn.hutool.core.util.PageUtil {
+
     public static List toPage(int page, int size , List list) {
         int fromIndex = page * size;
         int toIndex = page * size + size;

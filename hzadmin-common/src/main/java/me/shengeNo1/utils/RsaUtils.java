@@ -2,26 +2,21 @@ package me.shengeNo1.utils;
 
 import org.apache.commons.codec.binary.Base64;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 /**
- * @author https://www.cnblogs.com/nihaorz/p/10690643.html
- * @version 1.0.0
+ * @author ttps://www.cnblogs.com/nihaorz/p/10690643.html
  * @ClassName RsaUtils.java
- * @Description TODO
- * @createTime 2020年12月25日 17:10:00
+ * @Description Rsa 工具类，公钥私钥生成，加解密
+ * @createTime 2021年01月02日 17:15:00
  */
-public class RsaUtils {
 
+public class RsaUtils {
     private static final String SRC = "123456";
 
     /**
@@ -32,7 +27,7 @@ public class RsaUtils {
      * @return /
      * @throws Exception /
      */
-    public static String decryptByPublicKey(String publicKeyText, String text) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public static String decryptByPublicKey(String publicKeyText, String text) throws Exception {
         X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(Base64.decodeBase64(publicKeyText));
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec);
@@ -77,7 +72,6 @@ public class RsaUtils {
         byte[] result = cipher.doFinal(Base64.decodeBase64(text));
         return new String(result);
     }
-
 
     /**
      * 公钥加密
@@ -135,5 +129,6 @@ public class RsaUtils {
         }
 
     }
+
 
 }

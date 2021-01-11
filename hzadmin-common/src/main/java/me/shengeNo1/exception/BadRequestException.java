@@ -1,17 +1,19 @@
 package me.shengeNo1.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
- * @author 深哥哥的小迷妹 liuyuanshenno.1@gmail.com
- * @version 1.0.0
+ * @author shengeNo1 liuyuanshenno.1@gmail.com
  * @ClassName BadRequestException.java
  * @Description TODO
- * @createTime 2020年12月28日 19:13:00
+ * @createTime 2021年01月02日 17:30:00
  */
+@Getter
 public class BadRequestException extends RuntimeException {
+
     private Integer status = BAD_REQUEST.value();
 
     public BadRequestException(String msg){
@@ -22,4 +24,5 @@ public class BadRequestException extends RuntimeException {
         super(msg);
         this.status = status.value();
     }
+
 }

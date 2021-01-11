@@ -11,11 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author LYS liuyua776@gmail.com
- * @version 1.0.0
+ * @author shengeNo1 liuyuanshenno.1@gmail.com
  * @ClassName SpringContextHolder.java
  * @Description TODO
- * @createTime 2020年12月25日 11:23:00
+ * @createTime 2021年01月02日 11:35:00
  */
 @Slf4j
 public class SpringContextHolder implements ApplicationContextAware, DisposableBean {
@@ -24,12 +23,6 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
     private static final List<CallBack> CALL_BACKS = new ArrayList<>();
     private static boolean addCallback = true;
 
-    /**
-     * 针对 某些初始化方法，在SpringContextHolder 未初始化时 提交回调方法。
-     * 在SpringContextHolder 初始化后，进行回调使用
-     *
-     * @param callBack 回调函数
-     */
     public synchronized static void addCallBacks(CallBack callBack) {
         if (addCallback) {
             SpringContextHolder.CALL_BACKS.add(callBack);
@@ -83,6 +76,15 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
     }
 
     /**
+     * 清除SpringContextHolder中的ApplicationContext为Null.
+     */
+    private static void clearHolder() {
+        log.debug("清除SpringContextHolder中的ApplicationContext:"
+                + applicationContext);
+        applicationContext = null;
+    }
+
+    /**
      * 获取SpringBoot 配置信息
      *
      * @param property     属性key
@@ -93,27 +95,9 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
         return getProperties(property, null, requiredType);
     }
 
-    /**
-     * 检查ApplicationContext不为空.
-     */
-    private static void assertContextInjected() {
-        if (applicationContext == null) {
-            throw new IllegalStateException("applicaitonContext属性未注入, 请在applicationContext" +
-                    ".xml中定义SpringContextHolder或在SpringBoot启动类中注册SpringContextHolder.");
-        }
-    }
-
-    /**
-     * 清除SpringContextHolder中的ApplicationContext为Null.
-     */
-    private static void clearHolder() {
-        log.debug("清除SpringContextHolder中的ApplicationContext:"
-                + applicationContext);
-        applicationContext = null;
-    }
 
     @Override
-    public void destroy() {
+    public void destroy() throws Exception {
         SpringContextHolder.clearHolder();
     }
 
@@ -131,4 +115,15 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
         }
         SpringContextHolder.addCallback = false;
     }
+
+    /**
+     * 检查ApplicationContext不为空.
+     */
+    private static void assertContextInjected() {
+        if (applicationContext == null) {
+            throw new IllegalStateException("applicaitonContext属性未注入, 请在applicationContext" +
+                    ".xml中定义SpringContextHolder或在SpringBoot启动类中注册SpringContextHolder.");
+        }
+    }
+
 }

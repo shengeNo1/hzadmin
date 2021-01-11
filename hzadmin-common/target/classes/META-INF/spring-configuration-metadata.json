@@ -1,0 +1,85 @@
+{
+  "groups": [
+    {
+      "name": "file",
+      "type": "me.shengeNo1.config.FileProperties",
+      "sourceType": "me.shengeNo1.config.FileProperties"
+    },
+    {
+      "name": "file.linux",
+      "type": "me.shengeNo1.config.FileProperties$ElPath",
+      "sourceType": "me.shengeNo1.config.FileProperties"
+    },
+    {
+      "name": "file.mac",
+      "type": "me.shengeNo1.config.FileProperties$ElPath",
+      "sourceType": "me.shengeNo1.config.FileProperties"
+    },
+    {
+      "name": "file.path",
+      "type": "me.shengeNo1.config.FileProperties$ElPath",
+      "sourceType": "me.shengeNo1.config.FileProperties",
+      "sourceMethod": "getPath()"
+    },
+    {
+      "name": "file.windows",
+      "type": "me.shengeNo1.config.FileProperties$ElPath",
+      "sourceType": "me.shengeNo1.config.FileProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "file.avatar-max-size",
+      "type": "java.lang.Long",
+      "description": "头像大小限制",
+      "sourceType": "me.shengeNo1.config.FileProperties"
+    },
+    {
+      "name": "file.linux.avatar",
+      "type": "java.lang.String",
+      "sourceType": "me.shengeNo1.config.FileProperties$ElPath"
+    },
+    {
+      "name": "file.linux.path",
+      "type": "java.lang.String",
+      "sourceType": "me.shengeNo1.config.FileProperties$ElPath"
+    },
+    {
+      "name": "file.mac.avatar",
+      "type": "java.lang.String",
+      "sourceType": "me.shengeNo1.config.FileProperties$ElPath"
+    },
+    {
+      "name": "file.mac.path",
+      "type": "java.lang.String",
+      "sourceType": "me.shengeNo1.config.FileProperties$ElPath"
+    },
+    {
+      "name": "file.max-size",
+      "type": "java.lang.Long",
+      "description": "文件大小限制",
+      "sourceType": "me.shengeNo1.config.FileProperties"
+    },
+    {
+      "name": "file.path.avatar",
+      "type": "java.lang.String",
+      "sourceType": "me.shengeNo1.config.FileProperties$ElPath"
+    },
+    {
+      "name": "file.path.path",
+      "type": "java.lang.String",
+      "sourceType": "me.shengeNo1.config.FileProperties$ElPath"
+    },
+    {
+      "name": "file.windows.avatar",
+      "type": "java.lang.String",
+      "sourceType": "me.shengeNo1.config.FileProperties$ElPath"
+    },
+    {
+      "name": "file.windows.path",
+      "type": "java.lang.String",
+      "sourceType": "me.shengeNo1.config.FileProperties$ElPath"
+    }
+  ],
+  "hints": []
+}

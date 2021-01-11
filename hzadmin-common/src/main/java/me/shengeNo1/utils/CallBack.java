@@ -1,12 +1,12 @@
 package me.shengeNo1.utils;
 
 /**
- * @author LYS liuyua776@gmail.com
- * @version 1.0.0
+ * @author shengeNo1 liuyuanshenno.1@gmail.com
  * @ClassName CallBack.java
  * @Description TODO
- * @createTime 2020年12月25日 11:24:00
+ * @createTime 2021年01月02日 11:39:00
  */
+
 public interface CallBack {
     /**
      * 回调执行方法
@@ -20,4 +20,5 @@ public interface CallBack {
     default String getCallBackName() {
         return Thread.currentThread().getId() + ":" + this.getClass().getName();
     }
+
 }

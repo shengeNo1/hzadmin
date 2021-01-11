@@ -6,14 +6,14 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * @author 深哥哥的小迷妹 liuyuanshenno.1@gmail.com
- * @version 1.0.0
+ * @author shengeNo1 liuyuanshenno.1@gmail.com
  * @ClassName ApiError.java
  * @Description TODO
- * @createTime 2020年12月28日 19:13:00
+ * @createTime 2021年01月02日 17:39:00
  */
 @Data
 public class ApiError {
+
     private Integer status = 400;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
@@ -35,4 +35,5 @@ public class ApiError {
         apiError.setMessage(message);
         return apiError;
     }
+
 }

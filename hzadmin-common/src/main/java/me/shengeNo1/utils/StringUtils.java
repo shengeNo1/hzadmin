@@ -2,7 +2,6 @@ package me.shengeNo1.utils;
 
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.UserAgent;
@@ -23,12 +22,12 @@ import java.util.Date;
 import java.util.Enumeration;
 
 /**
- * @author LYS liuyua776@gmail.com
- * @version 1.0.0
+ * @author shengeNo1 liuyuanshenno.1@gmail.com
  * @ClassName StringUtils.java
  * @Description TODO
- * @createTime 2020年12月25日 11:21:00
+ * @createTime 2021年01月02日 02:00:00
  */
+
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     private static final Logger log = LoggerFactory.getLogger(StringUtils.class);
@@ -38,13 +37,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     private static final char SEPARATOR = '_';
     private static final String UNKNOWN = "unknown";
 
+
     static {
         SpringContextHolder.addCallBacks(() -> {
             StringUtils.ipLocal = SpringContextHolder.getProperties("ip.local-parsing", false, Boolean.class);
             if (ipLocal) {
-                /*
-                 * 此文件为独享 ，不必关闭
-                 */
                 String path = "ip2region/ip2region.db";
                 String name = "ip2region.db";
                 try {
@@ -58,92 +55,10 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
-     * 驼峰命名法工具
+     * 获取IP地址
      *
-     * @return toCamelCase(" hello_world ") == "helloWorld"
-     * toCapitalizeCamelCase("hello_world") == "HelloWorld"
-     * toUnderScoreCase("helloWorld") = "hello_world"
-     */
-    public static String toCamelCase(String s) {
-        if (s == null) {
-            return null;
-        }
-
-        s = s.toLowerCase();
-
-        StringBuilder sb = new StringBuilder(s.length());
-        boolean upperCase = false;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-
-            if (c == SEPARATOR) {
-                upperCase = true;
-            } else if (upperCase) {
-                sb.append(Character.toUpperCase(c));
-                upperCase = false;
-            } else {
-                sb.append(c);
-            }
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * 驼峰命名法工具
-     *
-     * @return toCamelCase(" hello_world ") == "helloWorld"
-     * toCapitalizeCamelCase("hello_world") == "HelloWorld"
-     * toUnderScoreCase("helloWorld") = "hello_world"
-     */
-    public static String toCapitalizeCamelCase(String s) {
-        if (s == null) {
-            return null;
-        }
-        s = toCamelCase(s);
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
-    }
-
-    /**
-     * 驼峰命名法工具
-     *
-     * @return toCamelCase(" hello_world ") == "helloWorld"
-     * toCapitalizeCamelCase("hello_world") == "HelloWorld"
-     * toUnderScoreCase("helloWorld") = "hello_world"
-     */
-    static String toUnderScoreCase(String s) {
-        if (s == null) {
-            return null;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        boolean upperCase = false;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-
-            boolean nextUpperCase = true;
-
-            if (i < (s.length() - 1)) {
-                nextUpperCase = Character.isUpperCase(s.charAt(i + 1));
-            }
-
-            if ((i > 0) && Character.isUpperCase(c)) {
-                if (!upperCase || !nextUpperCase) {
-                    sb.append(SEPARATOR);
-                }
-                upperCase = true;
-            } else {
-                upperCase = false;
-            }
-
-            sb.append(Character.toLowerCase(c));
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * 获取ip地址
+     * @param request
+     * @return
      */
     public static String getIp(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
@@ -162,7 +77,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             ip = ip.split(",")[0];
         }
         if (localhost.equals(ip)) {
-            // 获取本机真正的ip地址
             try {
                 ip = InetAddress.getLocalHost().getHostAddress();
             } catch (UnknownHostException e) {
@@ -172,9 +86,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return ip;
     }
 
-    /**
-     * 根据ip获取详细地址
-     */
     public static String getCityInfo(String ip) {
         if (ipLocal) {
             return getLocalCityInfo(ip);
@@ -187,7 +98,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * 根据ip获取详细地址
      */
     public static String getHttpCityInfo(String ip) {
-        String api = String.format(ElAdminConstant.Url.IP_URL, ip);
+        String api = String.format(HzAdminConstant.Url.IP_URL, ip);
         JSONObject object = JSONUtil.parseObj(HttpUtil.get(api));
         return object.get("addr", String.class);
     }
@@ -205,7 +116,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             if (address.charAt(address.length() - 1) == symbol) {
                 address = address.substring(0, address.length() - 1);
             }
-            return address.equals(ElAdminConstant.REGION) ? "内网IP" : address;
+            return address.equals(HzAdminConstant.REGION) ? "内网IP" : address;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -241,11 +152,10 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     public static String getLocalIp() {
         try {
             InetAddress candidateAddress = null;
-            // 遍历所有的网络接口
-            for (Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces(); interfaces.hasMoreElements();) {
+            for (Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces(); interfaces.hasMoreElements(); ) {
                 NetworkInterface anInterface = interfaces.nextElement();
                 // 在所有的接口下再遍历IP
-                for (Enumeration<InetAddress> inetAddresses = anInterface.getInetAddresses(); inetAddresses.hasMoreElements();) {
+                for (Enumeration<InetAddress> inetAddresses = anInterface.getInetAddresses(); inetAddresses.hasMoreElements(); ) {
                     InetAddress inetAddr = inetAddresses.nextElement();
                     // 排除loopback类型地址
                     if (!inetAddr.isLoopbackAddress()) {
@@ -271,10 +181,5 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         } catch (Exception e) {
             return "";
         }
-    }
-
-    public static String getUid(){
-        String s = IdUtil.simpleUUID();
-        return s;
     }
 }

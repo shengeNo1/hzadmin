@@ -4,10 +4,12 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.poi.excel.BigExcelWriter;
 import cn.hutool.poi.excel.ExcelUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.util.IOUtils;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
@@ -22,16 +24,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author LYS liuyua776@gmail.com
- * @version 1.0.0
+ * @author shengeNo1 liuyuanshenno.1@gmail.com
  * @ClassName FileUtil.java
- * @Description TODO
- * @createTime 2020年12月25日 11:25:00
+ * @Description File工具类，扩展 hutool 工具包
+ * @createTime 2021年01月02日 14:07:00
  */
+@Slf4j
 public class FileUtil extends cn.hutool.core.io.FileUtil {
-
-    private static final Logger log = LoggerFactory.getLogger(FileUtil.class);
-
     /**
      * 系统临时目录
      * <br>
@@ -68,7 +67,6 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     public static final String MUSIC = "音乐";
     public static final String VIDEO = "视频";
     public static final String OTHER = "其他";
-
 
     /**
      * MultipartFile转File
@@ -185,6 +183,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         return null;
     }
 
+
     /**
      * 导出excel
      */
@@ -199,6 +198,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         sheet.trackAllColumnsForAutoSizing();
         //列宽自适应
         writer.autoSizeColumnAll();
+        //列宽自适应支持中文单元格
+        sizeChineseColumn(sheet, writer);
         //response为HttpServletResponse对象
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         //test.xls是弹出下载对话框的文件名，不能为中文，中文请自行编码
@@ -209,6 +210,33 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         writer.flush(out, true);
         //此处记得关闭输出Servlet流
         IoUtil.close(out);
+    }
+
+    /**
+     * 自适应宽度(中文支持)
+     */
+    private static void sizeChineseColumn(SXSSFSheet sheet, BigExcelWriter writer) {
+        for (int columnNum = 0; columnNum < writer.getColumnCount(); columnNum++) {
+            int columnWidth = sheet.getColumnWidth(columnNum) / 256;
+            for (int rowNum = 0; rowNum < sheet.getLastRowNum(); rowNum++) {
+                SXSSFRow currentRow;
+                if (sheet.getRow(rowNum) == null) {
+                    currentRow = sheet.createRow(rowNum);
+                } else {
+                    currentRow = sheet.getRow(rowNum);
+                }
+                if (currentRow.getCell(columnNum) != null) {
+                    SXSSFCell currentCell = currentRow.getCell(columnNum);
+                    if (currentCell.getCellTypeEnum() == CellType.STRING) {
+                        int length = currentCell.getStringCellValue().getBytes().length;
+                        if (columnWidth < length) {
+                            columnWidth = length;
+                        }
+                    }
+                }
+            }
+            sheet.setColumnWidth(columnNum, columnWidth * 256);
+        }
     }
 
     public static String getFileType(String type) {
@@ -233,11 +261,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         // 1M
         int len = 1024 * 1024;
         if (size > (maxSize * len)) {
-            try {
-                throw new Exception("文件超出规定大小");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            throw new BadRequestException("文件超出规定大小");
         }
     }
 
